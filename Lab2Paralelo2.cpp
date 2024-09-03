@@ -38,16 +38,29 @@ void generarNumerosAleatorios(const std::string& nombreArchivo, int n) {
         std::cerr << "Error al abrir el archivo para escritura." << std::endl;
         return;
     }
-    srand(time(0)); // Inicializa la semilla para los números aleatorios
+    
+    std::vector<int> numeros(n);
+
+    // Generación paralela de números aleatorios
+    #pragma omp parallel
+    {
+        unsigned int seed = time(0) ^ omp_get_thread_num();
+        #pragma omp for schedule(static)
+        for (int i = 0; i < n; ++i) {
+            numeros[i] = rand_r(&seed) % 1000;
+        }
+    }
+
+    // Escritura secuencial de los números al archivo
     for (int i = 0; i < n; ++i) {
-        archivoSalida << rand() % 1000; // Genera un número aleatorio entre 0 y 999
+        archivoSalida << numeros[i];
         if (i < n - 1) {
             archivoSalida << ",";
         }
     }
+
     archivoSalida.close();
 }
-
 
 // Función para leer números desde un archivo CSV y almacenarlos en un vector
 std::vector<int> leerNumeros(const std::string& nombreArchivo) {
