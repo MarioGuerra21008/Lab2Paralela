@@ -85,13 +85,20 @@ void escribirNumeros(const std::string& nombreArchivo, const std::vector<int>& n
     archivoSalida.close();
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Obtener la cantidad de números a generar
+    int N;
+    if (argc != 2) {
+        N = 1000;
+    } else {
+        N = std::atoi(argv[1]);
+    }
+
+    // Tomar tiempo inicial 
+    clock_t start = clock();
+
     std::string archivoEntrada = "numbers.csv";
     std::string archivoSalida = "classifiedNumbers.csv";
-
-    int N;
-    std::cout << "Ingrese la cantidad de números a generar: ";
-    std::cin >> N;
 
     // Generar números aleatorios y escribir en archivo
     generarNumerosAleatorios(archivoEntrada, N);
@@ -104,8 +111,10 @@ int main() {
 
     // Escribir números ordenados en archivo
     escribirNumeros(archivoSalida, numeros);
-
-    std::cout << "Los números han sido generados, ordenados y guardados en el archivo " << archivoSalida << "." << std::endl;
-
+    // Tomar tiempo final
+    clock_t end = clock();
+    double elapsed_time = double(end - start) / CLOCKS_PER_SEC;
+    std::cout << "Tiempo de ejecución: " << elapsed_time << " segundos." << std::endl;
+    
     return 0;
 }
